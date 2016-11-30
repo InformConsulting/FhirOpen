@@ -10,8 +10,13 @@ def list():
     return r.json()
 
 
-def read(pk):
-    r = requests.get('{}/{}'.format(FHIR_URL, pk), dict(_format='json', _pretty=True))
+def read(pk, history=None):
+    params = dict(_format='json', _pretty=True)
+
+    if history is not None:
+        params['_history'] = history
+
+    r = requests.get('{}/{}'.format(FHIR_URL, pk), params)
     return r.json()
 
 
