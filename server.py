@@ -97,7 +97,11 @@ def read(resource_type, pk):
         pass
 
     if request.method == 'DELETE':
-        pass
+        raw = 'SELECT fhir_delete_resource(\'{"resourceType": "%(type)s", "id": "%(pk)s"}\');' % {'type': str(resource_type), 'pk': str(pk)}
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
 
     return jsonify({})
 
