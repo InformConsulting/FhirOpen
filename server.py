@@ -52,7 +52,12 @@ def list(resource_type):
     """
 
     if request.method == 'GET':
-        pass
+        query_string = request.query_string
+        raw = 'SELECT fhir_search(\'{"resourceType": "%(type)s", "queryString": "%(query)s"}\');' % {'type': str(resource_type), 'query': str(query_string)}
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
 
     if request.method == 'POST':
         raw = 'SELECT fhir_create_resource(\'{"resource": %s}\');' % json.dumps(request.json)
@@ -80,7 +85,11 @@ def read(resource_type, pk):
         return jsonify(**result)
 
     if request.method == 'PUT':
-        pass
+        raw = 'SELECT fhir_update_resource(\'{"resource": %s}\');' % json.dumps(request.json)
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
 
     if request.method == 'PATCH':
         pass
@@ -96,7 +105,13 @@ def vread(resource_type, pk, vpk):
     """
     GET - vread
     """
-    return jsonify({})
+
+    if request.method == 'GET':
+        raw = 'SELECT fhir_vread_resource(\'{"resourceType": "%(type)s", "id": "%(pk)s", "versionId": "%(vpk)s"}\');' % {'type': str(resource_type), 'pk': str(pk), 'vpk': str(vpk)}
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
 
 
 @app.route('/fhir/<resource_type>/_search', methods=['POST'])
