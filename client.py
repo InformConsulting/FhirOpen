@@ -3,6 +3,7 @@ import json
 
 #FHIR_URL = 'http://fhirtest.uhn.ca/baseDstu2/Patient'
 FHIR_URL = 'https://argonaut.aidbox.io/fhir/Patient'
+ENCOUNTER_URL = 'https://argonaut.aidbox.io/fhir/Encounter'
 
 
 def list():
@@ -12,11 +13,12 @@ def list():
 
 def read(pk, history=None):
     params = dict(_format='json', _pretty=True)
+    h = str()
 
     if history is not None:
-        params['_history'] = history
-
-    r = requests.get('{}/{}'.format(FHIR_URL, pk), params)
+        h = '/_history/%s' % history
+    print('{}/{}{}'.format(FHIR_URL, pk, h))
+    r = requests.get('{}/{}{}'.format(FHIR_URL, pk, h), params)
     return r.json()
 
 
@@ -51,6 +53,12 @@ def delete(pk):
     return r
 
 
+def encounter(pk):
+    params = dict(_format='json', _pretty=True, patient=pk)
+    r = requests.get('{}/{}'.format(ENCOUNTER_URL, pk), params)
+    r.headers = {'Accept': 'application/json+fhir'}
+    return r.json()
+
 #print(create())
 #print(delete('5fb02143-cc23-4eb2-a07d-4f68c745840d'))
-print(read('5fb02143-cc23-4eb2-a07d-4f68c745840d'))
+print(read('920fc6eb-b341-46b3-aa1a-e36605729be8', '5584a7e4-8e9f-4f24-b786-a5a896912013'))
