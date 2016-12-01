@@ -54,7 +54,7 @@ def list(resource_type):
     """
 
     if request.method == 'GET':
-        query_string = unquote(urlparse(request.url).query)
+        query_string = urlparse(request.url).query
         raw = 'SELECT fhir_search(\'{"resourceType": "%(type)s", "queryString": "%(query)s"}\');' % {'type': str(resource_type), 'query': str(query_string)}
         query = connection.execute(text(raw))
         result = query.fetchone()[0]
