@@ -3,6 +3,8 @@ import os
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
+from urllib.parse import urlparse
+
 
 CONFIG = os.path.abspath('./server_config.py')
 
@@ -52,7 +54,7 @@ def list(resource_type):
     """
 
     if request.method == 'GET':
-        query_string = request.query_string
+        query_string = urlparse(request.url).query
         raw = 'SELECT fhir_search(\'{"resourceType": "%(type)s", "queryString": "%(query)s"}\');' % {'type': str(resource_type), 'query': str(query_string)}
         query = connection.execute(text(raw))
         result = query.fetchone()[0]
