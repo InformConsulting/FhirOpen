@@ -135,59 +135,11 @@ def capabilities():
     GET - capabilities
     OPTIONS - capabilities
     """
-    con = {
-        "resourceType": "Conformance",
-        "acceptUnknown": "extensions",
-        "fhirVersion": "1.4.0",
-        "version": "1.4.0.0",
-        "software": {
-            "name": "Fhirbase",
-            "releaseDate": "2016-07-12T12:00:00Z",
-            "version": "1.6.0.0"
-        },
-        "rest": [
-            {
-                "mode": "server",
-                "resource": [
-                    {
-                        "type": "Patient",
-                        "versioning": "versioned",
-                        "profile": {
-                            "reference": "/fhir/Patient"
-                        },
-                        "interaction": [
-                            {
-                                "code": "read"
-                            },
-                            {
-                                "code": "vread"
-                            },
-                            {
-                                "code": "update"
-                            },
-                            {
-                                "code": "delete"
-                            },
-                            {
-                                "code": "history-instance"
-                            },
-                            {
-                                "code": "history-type"
-                            },
-                            {
-                                "code": "create"
-                            },
-                            {
-                                "code": "search-type"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+    raw = 'SELECT fhir_conformance(\'{"default": "values"}\');'
+    query = connection.execute(text(raw))
+    result = query.fetchone()[0]
 
-    return jsonify(con)
+    return jsonify(**result)
 
 
 if __name__ == '__main__':
