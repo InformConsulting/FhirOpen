@@ -17,6 +17,33 @@ def index():
     return 'Sample FHIR server'
 
 
+@app.route('/fhir/admin/<resource_type>', methods=['POST', 'DELETE'])
+def admin(resource_type):
+    """
+    Метод, для создания и удаления ресурсов.
+    Например: 
+        POST   http://localhost:5000/fhir/admin/Patient - создаем ресурс Patient
+        DELETE http://localhost:5000/fhir/admin/Patient - удаляем ресурс Patient
+
+    DELETE - delete
+    POST - create
+    """
+
+    if request.method == 'POST':
+        raw = 'SELECT fhir_create_storage(\'{"resourceType": "%(type)s"}\');' % {'type': str(resource_type)}
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
+
+    if request.method == 'DELETE':
+        raw = 'SELECT fhir_drop_storage(\'{"resourceType": "%(type)s"}\');' % {'type': str(resource_type)}
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
+
+
 @app.route('/fhir/<resource_type>', methods=['GET', 'POST'])
 def list(resource_type):
     """
@@ -24,10 +51,15 @@ def list(resource_type):
     POST - create
     """
 
-    raw = 'SELECT fhir_create_resource(\'{"resource": {"resourceType": "%(type)s", "name": [{"given": ["Smith"]}]}}\');' % {'type': str(resource_type)}
-    query = connection.execute(text(raw))
-    result = query.fetchone()[0]
-    return jsonify(**result)
+    if request.method == 'GET':
+        pass
+
+    if request.method == 'POST':
+        raw = 'SELECT fhir_create_storage(\'{"resourceType": "%(type)s"}\');' % {'type': str(resource_type)}
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
 
 
 @app.route('/fhir/<resource_type>/<pk>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
@@ -40,7 +72,11 @@ def read(resource_type, pk):
     """
 
     if request.method == 'GET':
-        pass
+        raw = 'SELECT fhir_read_resource(\'{"resourceType": "%(type)s", "id": "%(pk)s"}\');' % {'type': str(resource_type), 'pk': str(pk)}
+        query = connection.execute(text(raw))
+        result = query.fetchone()[0]
+
+        return jsonify(**result)
 
     if request.method == 'PUT':
         pass
