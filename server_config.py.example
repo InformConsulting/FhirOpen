@@ -1,0 +1,5 @@
+DEBUG = True
+SECRET_KEY = 'secret'
+
+# postgresql://user:12345678@localhost/fhirbase
+SQLALCHEMY_DATABASE_URI = 'postgresql://<USERNAME>:<PASSWORD>@<SERVER>/<BASENAME>'

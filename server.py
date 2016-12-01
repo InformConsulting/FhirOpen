@@ -1,11 +1,14 @@
 import json
+import os
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
+CONFIG = os.path.abspath('./server_config.py')
 
 app = Flask(__name__)
-engine = create_engine('postgresql://postgres:aHTMLPNNdra3pq@localhost/fhirbase')
+app.config.from_pyfile(CONFIG)
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 connection = engine.connect()
 
 
@@ -17,6 +20,7 @@ def index():
 @app.route('/fhir/<resource_type>', methods=['GET', 'POST'])
 def list(resource_type):
     """
+    GET - search
     POST - create
     """
 
