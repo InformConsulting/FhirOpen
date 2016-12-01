@@ -55,7 +55,8 @@ def list(resource_type):
         pass
 
     if request.method == 'POST':
-        raw = 'SELECT fhir_create_storage(\'{"resourceType": "%(type)s"}\');' % {'type': str(resource_type)}
+        raw = 'SELECT fhir_create_resource(\'{"resource": %s}\');' % request.json
+
         query = connection.execute(text(raw))
         result = query.fetchone()[0]
 
